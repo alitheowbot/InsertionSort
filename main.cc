@@ -4,7 +4,7 @@ using namespace std;
 
 struct T
 {
-    int element = INT_MAX;
+    int element = 0;
     T *next = NULL;
     T *prev = NULL;
 };
@@ -94,6 +94,36 @@ void DisplayBackward(T *tail)
     cout << "]" << endl;
 }
 
+void InsertSorted(T *head, T *tail) 
+{
+    int userElement = 0;
+    cout << "\nInsert number: ";
+    cin >> userElement;
+
+    T *newNode = new T;
+    T *traverseNode = head->next;
+
+    while (traverseNode->next != NULL || traverseNode == tail) { // checks if our list is empty as well.
+        if (traverseNode->element > userElement || traverseNode == tail) 
+        {
+            traverseNode->prev->next = newNode;
+
+            newNode->prev = traverseNode->prev;
+            newNode->next = traverseNode;
+            newNode->element = userElement;
+
+            traverseNode->prev = newNode;
+            return;
+        }
+        else 
+        {
+            traverseNode = traverseNode->next;
+        }
+    }
+    cout << "Failed to find where to insert!" << endl;
+
+}
+
 void InsertForward(T *head, T *tail)
 {
     int userElement = 0;
@@ -143,10 +173,11 @@ void Everything()
         cout << "| Insert Menu:       |" << endl;
         cout << "| 1. Insert at back  |" << endl;
         cout << "| 2. Insert at front |" << endl;
-        cout << "| 3. Display forward |" << endl;
-        cout << "| 4. Display backward|" << endl;
-        cout << "| 5. Delete by value |" << endl;
-        cout << "| 6. Delete by index |" << endl;
+        cout << "| 3. Insert sorted   |" << endl;
+        cout << "| 4. Display forward |" << endl;
+        cout << "| 5. Display backward|" << endl;
+        cout << "| 6. Delete by value |" << endl;
+        cout << "| 7. Delete by index |" << endl;
         cout << "| -1 to exit         |" << endl;
         cout << "|____________________|" << endl;
         cout << endl
@@ -161,21 +192,24 @@ void Everything()
         {
             InsertForward(head, tail);
         }
-        else if (userInput == 3)
-        {
-            DisplayForward(head);
+        else if (userInput == 3) {
+            InsertSorted(head, tail);
         }
         else if (userInput == 4)
         {
-            DisplayBackward(tail);
+            DisplayForward(head);
         }
         else if (userInput == 5)
+        {
+            DisplayBackward(tail);
+        }
+        else if (userInput == 6)
         {
             DisplayForward(head);
             DeleteByValue(head);
             DisplayForward(head);
         }
-        else if (userInput == 6)
+        else if (userInput == 7)
         {
             DisplayForward(head);
             DeleteByIndex(head);
