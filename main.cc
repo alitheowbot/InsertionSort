@@ -1,6 +1,8 @@
 #include <iostream>
+#include <vector>
 
 using namespace std;
+
 
 struct T
 {
@@ -9,13 +11,24 @@ struct T
     T *prev = NULL;
 };
 
-void DeleteByValue(T *head) {
+struct List
+{
+    T* head;
+    T* tail;
+};
+
+
+vector<List*> TList;
+
+List* UseCorrectList();
+
+void DeleteByValue(List* list) {
     int userElement = 0;
     cout << "\nInsert number: ";
     cin >> userElement;
 
-    T* newNode = head->next;
-    
+    T* newNode = list->head->next;
+
     while (newNode->next != NULL) {
         if (newNode->element == userElement) {
             newNode->prev->next = newNode->next;
@@ -30,14 +43,14 @@ void DeleteByValue(T *head) {
     cout << "Element not found." << endl;
 }
 
-void DeleteByIndex(T *head) {
+void DeleteByIndex(List* list) {
     int userElement = 0;
     int index = 0;
     cout << "\nType Index [Count from 0]: ";
     cin >> userElement;
 
-    T* newNode = head->next;
-    
+    T* newNode = list->head->next;
+
     while (newNode->next != NULL) {
         if (index == userElement) {
             newNode->prev->next = newNode->next;
@@ -53,9 +66,9 @@ void DeleteByIndex(T *head) {
     cout << "Index not found." << endl;
 }
 
-void DisplayForward(T *head)
+void DisplayForward(List* list)
 {
-    T* tmpNode = head->next;
+    T* tmpNode = list->head->next;
 
     cout << "List: [";
     while (tmpNode->next != NULL)
@@ -74,9 +87,9 @@ void DisplayForward(T *head)
     cout << "]" << endl;
 }
 
-void DisplayBackward(T *tail)
+void DisplayBackward(List* list)
 {
-    T* tmpNode = tail->prev;
+    T* tmpNode = list->tail->prev;
     cout << "List: [";
     while (tmpNode->prev != NULL)
     {
@@ -94,17 +107,17 @@ void DisplayBackward(T *tail)
     cout << "]" << endl;
 }
 
-void InsertSorted(T *head, T *tail) 
+void InsertSorted(List* list)
 {
     int userElement = 0;
     cout << "\nInsert number: ";
     cin >> userElement;
 
     T *newNode = new T;
-    T *traverseNode = head->next;
+    T *traverseNode = list->head->next;
 
-    while (traverseNode->next != NULL || traverseNode == tail) { // checks if our list is empty as well.
-        if (traverseNode->element > userElement || traverseNode == tail) 
+    while (traverseNode->next != NULL || traverseNode == list->tail) { // checks if our list is empty as well.
+        if (traverseNode->element > userElement || traverseNode == list->tail)
         {
             traverseNode->prev->next = newNode;
 
@@ -115,7 +128,7 @@ void InsertSorted(T *head, T *tail)
             traverseNode->prev = newNode;
             return;
         }
-        else 
+        else
         {
             traverseNode = traverseNode->next;
         }
@@ -124,7 +137,7 @@ void InsertSorted(T *head, T *tail)
 
 }
 
-void InsertForward(T *head, T *tail)
+void InsertForward(List* list)
 {
     int userElement = 0;
     cout << "\nInsert number: ";
@@ -133,13 +146,13 @@ void InsertForward(T *head, T *tail)
     T *newNode = new T;
 
     newNode->element = userElement;
-    newNode->prev = head;
-    newNode->next = head->next;
-    head->next->prev = newNode;
-    head->next = newNode;
+    newNode->prev = list->head;
+    newNode->next = list->head->next;
+    list->head->next->prev = newNode;
+    list->head->next = newNode;
 }
 
-void InsertBack(T *head, T *tail)
+void InsertBack(List* list)
 {
     int userElement = 0;
     cout << "\nInsert number: ";
@@ -148,22 +161,113 @@ void InsertBack(T *head, T *tail)
     T *newNode = new T;
 
     newNode->element = userElement;
-    newNode->next = tail;
-    newNode->prev = tail->prev;
-    tail->prev->next = newNode;
-    tail->prev = newNode;
+    newNode->next = list->tail;
+    newNode->prev = list->tail->prev;
+    list->tail->prev->next = newNode;
+    list->tail->prev = newNode;
+}
+
+void ListSplit(List* list)
+{
+    DisplayForward(list);
+
+    int userInput = 0;
+    int index = 0;
+    cout << "At what index [0, 1, 2, etc.] would you like to split the list at?" << endl;
+    cin >> userInput;
+
+    T *traverseNode = list->head->next;
+    T *newHead = new T; // For new list
+    T *newTail = new T; // For original list
+    while (traverseNode != NULL)
+    {
+        if (index == userInput)
+        {
+            traverseNode->next->prev = newHead;
+            newHead->next = traverseNode->next;
+            newHead->prev = NULL;
+
+            newTail->prev = traverseNode;
+            newTail->next = NULL;
+
+            traverseNode->next = newTail;
+
+            List* newList = new List;
+            newList->head = newHead;
+            newList->tail = list->tail;
+            list->tail = newTail;
+
+            TList.push_back(newList);
+            return;
+        }
+        else
+        {
+            traverseNode = traverseNode->next;
+            index++;
+        }
+    }
+    cout << "Failed!";
+}
+
+List* UseCorrectList()
+{
+    int num = -2;
+
+    for (int i = 0; i < TList.size(); i++)
+    {
+        cout << (i+1) << ". ";
+        DisplayForward(TList[i]);
+        cout << endl;
+    }
+
+    cout << "Which list would you like to edit? ";
+
+    while (num == -2)
+    {
+        cin >> num;
+        if (num <= TList.size()) return TList[num-1];
+        else { cout << "\nInvalid input, try again\n"; }
+    }
+
+    return 0;
+}
+
+void DisplayAll() // Hidden Function, type "88" in the menu to access!
+{
+    cout << endl;
+    for (int i = 0; i < TList.size(); i++)
+    {
+        List* list = TList[i];
+        T* traverseNode = list->head->next;
+        while (traverseNode->next != NULL) {
+            cout << "Element: " << traverseNode->element << " Next Address Element: " << traverseNode->next->element << endl;
+            traverseNode = traverseNode->next;
+        }
+    }
 }
 
 void Everything()
 {
+    // Initializes our first list
     T *head = new T; T *tail = new T; head->next = tail; tail->prev = head;
-    int userInput = 0;
+    List* first_List = new List;
+    first_List->head = head; first_List->tail = tail;
+    TList.push_back(first_List);
 
+    int userInput = 0;
     while (userInput != -1)
     {
+        List* list = TList[0];
+        if (TList.size() > 1)
+        {
+            list = UseCorrectList();
+        }
+
+
         // TODO:
         // List split
-        // Insert sorted (12, 6, 22), insert 15 would be: (12, 15, 6, 22)
+            // Add an if else statement to see if theres more than 1 list available before sending them to the function.
+            // If there are more than 1 lists available, display them, and ask them which one they want to send to the function
         // Sort list using merge sort (list split recursively until n=2. then compare and swap their positions around. I think?)
 
         cout << endl
@@ -176,8 +280,9 @@ void Everything()
         cout << "| 3. Insert sorted   |" << endl;
         cout << "| 4. Display forward |" << endl;
         cout << "| 5. Display backward|" << endl;
-        cout << "| 6. Delete by value |" << endl;
-        cout << "| 7. Delete by index |" << endl;
+        cout << "| 6. List Split      |" << endl;
+        cout << "| 7. Delete by value |" << endl;
+        cout << "| 8. Delete by index |" << endl;
         cout << "| -1 to exit         |" << endl;
         cout << "|____________________|" << endl;
         cout << endl
@@ -186,45 +291,53 @@ void Everything()
         cin >> userInput;
         if (userInput == 1)
         {
-            InsertBack(head, tail);
+            InsertBack(list);
         }
         else if (userInput == 2)
         {
-            InsertForward(head, tail);
+            InsertForward(list);
         }
         else if (userInput == 3) {
-            InsertSorted(head, tail);
+            InsertSorted(list);
         }
         else if (userInput == 4)
         {
-            DisplayForward(head);
+            DisplayForward(list);
         }
         else if (userInput == 5)
         {
-            DisplayBackward(tail);
+            DisplayBackward(list);
         }
         else if (userInput == 6)
         {
-            DisplayForward(head);
-            DeleteByValue(head);
-            DisplayForward(head);
+            ListSplit(list);
         }
         else if (userInput == 7)
         {
-            DisplayForward(head);
-            DeleteByIndex(head);
-            DisplayForward(head);
+            DisplayForward(list);
+            DeleteByValue(list);
+            DisplayForward(list);
+        }
+        else if (userInput == 88) {
+            DisplayAll();
+        }
+        else if (userInput == 8)
+        {
+            DisplayForward(list);
+            DeleteByIndex(list);
+            DisplayForward(list);
         }
     }
 
-    T* current = head->next;
+    /*T* current = head->next;
     while (current != tail) {
         T* temp = current;
         current = current->next;
         delete temp;
     }
     delete head;
-    delete tail;
+    delete tail;*/
+    // Construction notes: Go through each List in TList and delete the heads and tails of those
 }
 
 int main()
