@@ -14,19 +14,20 @@ void DeleteByValue(T *head) {
     cout << "\nInsert number: ";
     cin >> userElement;
 
-    T* newNode = new T;
-    newNode = head->next;
+    T* newNode = head->next;
     
     while (newNode->next != NULL) {
         if (newNode->element == userElement) {
             newNode->prev->next = newNode->next;
             newNode->next->prev = newNode->prev;
+            delete newNode;
             return;
         }
         else {
             newNode = newNode->next;
         }
     }
+    cout << "Element not found." << endl;
 }
 
 void DeleteByIndex(T *head) {
@@ -35,13 +36,13 @@ void DeleteByIndex(T *head) {
     cout << "\nType Index [Count from 0]: ";
     cin >> userElement;
 
-    T* newNode = new T;
-    newNode = head->next;
+    T* newNode = head->next;
     
     while (newNode->next != NULL) {
         if (index == userElement) {
             newNode->prev->next = newNode->next;
             newNode->next->prev = newNode->prev;
+            delete newNode;
             return;
         }
         else {
@@ -49,12 +50,12 @@ void DeleteByIndex(T *head) {
             newNode = newNode->next;
         }
     }
+    cout << "Index not found." << endl;
 }
 
 void DisplayForward(T *head)
 {
-    T *tmpNode = new T;
-    tmpNode = head->next;
+    T* tmpNode = head->next;
 
     cout << "List: [";
     while (tmpNode->next != NULL)
@@ -70,13 +71,12 @@ void DisplayForward(T *head)
 
         tmpNode = tmpNode->next;
     }
-    cout << "]";
+    cout << "]" << endl;
 }
 
 void DisplayBackward(T *tail)
 {
-    T *tmpNode = new T;
-    tmpNode = tail->prev;
+    T* tmpNode = tail->prev;
     cout << "List: [";
     while (tmpNode->prev != NULL)
     {
@@ -91,7 +91,7 @@ void DisplayBackward(T *tail)
 
         tmpNode = tmpNode->prev;
     }
-    cout << "]";
+    cout << "]" << endl;
 }
 
 void InsertForward(T *head, T *tail)
@@ -126,23 +126,19 @@ void InsertBack(T *head, T *tail)
 
 void Everything()
 {
-    T *head = new T;
-    T *tail = new T;
-    head->next = tail;
-    tail->prev = head;
+    T *head = new T; T *tail = new T; head->next = tail; tail->prev = head;
     int userInput = 0;
 
     while (userInput != -1)
     {
         // TODO:
-        // Delete value at index
         // List split
         // Insert sorted (12, 6, 22), insert 15 would be: (12, 15, 6, 22)
         // Sort list using merge sort (list split recursively until n=2. then compare and swap their positions around. I think?)
 
         cout << endl
              << endl;
-        cout << "_____________________|" << endl;
+        cout << "______________________" << endl;
         cout << "|                    |" << endl;
         cout << "| Insert Menu:       |" << endl;
         cout << "| 1. Insert at back  |" << endl;
@@ -186,6 +182,15 @@ void Everything()
             DisplayForward(head);
         }
     }
+
+    T* current = head->next;
+    while (current != tail) {
+        T* temp = current;
+        current = current->next;
+        delete temp;
+    }
+    delete head;
+    delete tail;
 }
 
 int main()
