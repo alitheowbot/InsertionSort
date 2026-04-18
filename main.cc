@@ -226,7 +226,7 @@ List* UseCorrectList()
     {
         cin >> num;
         if (num <= TList.size()) return TList[num-1];
-        else { cout << "\nInvalid input, try again\n"; }
+        else { cout << "\nInvalid input, try again\n"; num = -2; }
     }
 
     return 0;
@@ -265,11 +265,9 @@ void Everything()
 
 
         // TODO:
-        // List split
-            // Add an if else statement to see if theres more than 1 list available before sending them to the function.
-            // If there are more than 1 lists available, display them, and ask them which one they want to send to the function
         // Sort list using merge sort (list split recursively until n=2. then compare and swap their positions around. I think?)
-
+        // once n=1, thats when we start merging. keep comparing the head of each list with the head of the other list
+        // whichever head is smaller, drag it to a separate list, and keep doing that recursively
         cout << endl
              << endl;
         cout << "______________________" << endl;
